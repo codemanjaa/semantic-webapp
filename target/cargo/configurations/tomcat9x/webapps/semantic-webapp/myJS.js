@@ -17,7 +17,15 @@ function doQuery()
 
 function doQuery_back(result)
 {
-alert('result:'+result);
+	 jsonData = JSON.parse(result);
+	   document.getElementById("content").innerHTML= result; //'<object type="text/html" data=jsonData ></object>';
+	  // Create the table element
+	  console.log(result);
+         let table = document.createElement("table");
+           table.style.border = "1px solid #000";
+         let div = document.createElement("div");
+      	 let cols = Object.keys(jsonData["results"]); 
+//alert('result:'+result);
 }
 
 

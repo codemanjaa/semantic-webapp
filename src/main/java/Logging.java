@@ -47,8 +47,6 @@ public class Logging extends HttpServlet {
 			String repoURL = request.getParameter("repoURL").toString();
 			String repoId = request.getParameter("repoId").toString();
 			String sparqlQuery = request.getParameter("sparqlQuery").toString();
-			String pathToDB = this.getServletContext().getRealPath("/res/BookingDB.ttl");
-			//mediator.searchForResult(pathToDB, repoURL, repoId, sparqlQuery);
 			mediator.getGraphDBConnection(repoURL, repoId, sparqlQuery);
 
 	    }
