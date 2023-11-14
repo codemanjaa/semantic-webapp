@@ -1,18 +1,24 @@
 
 
+import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import org.eclipse.rdf4j.model.Model;
 import java.util.StringTokenizer;
 import org.eclipse.rdf4j.query.BindingSet;
 import org.eclipse.rdf4j.query.BooleanQuery;
+import org.eclipse.rdf4j.query.GraphQuery;
 import org.eclipse.rdf4j.query.QueryLanguage;
+import org.eclipse.rdf4j.query.QueryResults;
 import org.eclipse.rdf4j.query.TupleQuery;
 import org.eclipse.rdf4j.query.TupleQueryResult;
 import org.eclipse.rdf4j.repository.Repository;
 import org.eclipse.rdf4j.repository.RepositoryConnection;
 import org.eclipse.rdf4j.repository.http.HTTPRepository;
+import org.eclipse.rdf4j.rio.RDFFormat;
+import org.eclipse.rdf4j.rio.Rio;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -72,20 +78,7 @@ public class SWDB {
 
                 // Evaluate the query and process the results
                 try (TupleQueryResult result = tupleQuery.evaluate()) {
-                  /*  while (result.hasNext()) {
-                        BindingSet bindingSet = result.next();
-                        // Access individual query bindings
-                        Value subject = bindingSet.getValue("subject");
-                        Value predicate = bindingSet.getValue("predicate");
-                        Value object = bindingSet.getValue("object");
-
-                        // Process the retrieved RDF data
-                        System.out.println("Subject: " + subject);
-                        System.out.println("Predicate: " + predicate);
-                        System.out.println("Object: " + object);
-                        System.out.println("--------");
-                    }*/
-                    
+                                   
                     try {
                         String jsonResult = convertTupleQueryResultToJson(result);
                         queryResult = jsonResult.toString();
@@ -103,6 +96,16 @@ public class SWDB {
                     System.out.println("Return boolean "+result);
             		 
             	 }
+            	 else if((qCommand.equals("CONSTRUCT")) || (qCommand.equals("DESCRIBE")))  {
+             		// Prepare the ASK query
+            		 GraphQuery graphQuery = connection.prepareGraphQuery(QueryLanguage.SPARQL, queryString);
+            		 Model resultModel = QueryResults.asModel(graphQuery.evaluate());
+            		 StringWriter writer = new StringWriter();
+            		 Rio.write(resultModel, writer, RDFFormat.JSONLD);
+            		 queryResult = writer.toString();
+                     System.out.println("Return boolean "+queryResult);
+             		 
+             	 }
             }
         } finally {
             // Shut down the repository properly when done
@@ -133,46 +136,6 @@ public class SWDB {
 		//connect();
 		//getGraphDBConnection();
 	   System.out.println("Do query..."+p1 +" "+ p2 + " "+ p3);
-		/*
-       Model model = RDFDataMgr.loadModel(pathDB) ;
-       OntModelSpec ontModelSpec = OntModelSpec.OWL_DL_MEM;
-       OntModel ontModel = ModelFactory.createOntologyModel(ontModelSpec, model);
-
-       String queryString = "PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\n" + 
-       		"PREFIX e: <http://example.org/ex>\n" + 
-       		"PREFIX b: <http://example.org/ItemOntology>\n" + 
-       		"SELECT ?itemId \n" + 
-       		"WHERE {  ?item rdf:type b:Item.\n" + 
-       		"         ?item b:hasParam01 \""+p1+"\".\n" + 
-       		"         ?item b:hasParam02 \""+p2+"\".\n" + 
-       		"         ?item b:hasParam03 \""+p3+"\".\n" + 
-       		"         ?item b:itemID ?itemId.\n" + 
-       		"}";
-       */
-	   /*
-       String queryString_ = "PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\n" + 
-          		"PREFIX e: <http://example.org/ex>\n" + 
-          		"PREFIX b: <http://example.org/ItemOntology>\n" + 
-          		"SELECT ?itemId \n" + 
-          		"WHERE {  ?item rdf:type b:Item.\n" + 
-          		"         ?item b:hasParam01 \""+p1+"\".\n" + 
-          		"         ?item b:itemID ?itemId.\n" + 
-          		"}";
-       
-       Dataset dataset = DatasetFactory.create(ontModel);
-       Query q = QueryFactory.create(queryString);
-
-       QueryExecution qexec = QueryExecutionFactory.create(q, dataset);
-       ResultSet resultSet = qexec.execSelect();
-       
-       System.out.println("Results: ---");       
-       while(resultSet.hasNext()) {
-    	   QuerySolution row = (QuerySolution)resultSet.next();
-    	   RDFNode nextItemId = row.get("itemId");
-    	   System.out.print("ItemID is: "+nextItemId.toString()+".\n"); 
-    
-       }
-       */  
     	   
 	} 	
 		
