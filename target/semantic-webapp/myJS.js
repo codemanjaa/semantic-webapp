@@ -17,6 +17,11 @@ function doQuery()
 
 function doQuery_back(result)
 {
+	if (typeof result === 'string') {
+		 document.getElementById("content").innerHTML= result; //'<object type="text/html" data=jsonData ></object>';
+	  
+    
+	} else {
 	 jsonData = JSON.parse(result);
 	   document.getElementById("content").innerHTML= result; //'<object type="text/html" data=jsonData ></object>';
 	  // Create the table element
@@ -27,7 +32,7 @@ function doQuery_back(result)
       	 let cols = Object.keys(jsonData["results"]); 
 //alert('result:'+result);
 }
-
+}
 
 
 

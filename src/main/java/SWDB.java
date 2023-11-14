@@ -4,9 +4,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import org.eclipse.rdf4j.model.Value;
+import java.util.StringTokenizer;
 import org.eclipse.rdf4j.query.BindingSet;
+import org.eclipse.rdf4j.query.BooleanQuery;
 import org.eclipse.rdf4j.query.QueryLanguage;
 import org.eclipse.rdf4j.query.TupleQuery;
 import org.eclipse.rdf4j.query.TupleQueryResult;
@@ -55,9 +55,18 @@ public class SWDB {
             	System.out.println("Connection Activated..........");
                 // SPARQL query to retrieve RDF data
             	 String queryString = sparqlQuery;
-
+            	 StringTokenizer tokenizer = new StringTokenizer(queryString);
+            	  
+            	 String qCommand = null;
+            	 if(tokenizer.hasMoreTokens()) {
+            		 qCommand = tokenizer.nextToken().toUpperCase();
+            		 System.out.println(qCommand);
+            		 System.out.println("TOKENS "+ tokenizer.countTokens());
+            	 }
+            	
             	// String queryString = "SELECT ?subject ?predicate ?object WHERE {?subject ?predicate ?object}";
 
+            	 if(qCommand.equals("SELECT")) {
                 // Prepare the query
                 TupleQuery tupleQuery = connection.prepareTupleQuery(QueryLanguage.SPARQL, queryString);
 
@@ -85,6 +94,15 @@ public class SWDB {
                         e.printStackTrace();
                     }
                 }
+               } 
+            	 else if(qCommand.equals("ASK")) {
+            		// Prepare the ASK query
+                     BooleanQuery booleanQuery = connection.prepareBooleanQuery(QueryLanguage.SPARQL, queryString);
+                    boolean result = booleanQuery.evaluate();
+                    queryResult = String.valueOf(result);
+                    System.out.println("Return boolean "+result);
+            		 
+            	 }
             }
         } finally {
             // Shut down the repository properly when done
